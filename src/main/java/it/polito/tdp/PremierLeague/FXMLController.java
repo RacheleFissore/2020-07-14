@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Team;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -18,6 +19,7 @@ import javafx.scene.control.TextField;
 public class FXMLController {
 	
 	private Model model;
+	private boolean entrato = false;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -35,7 +37,7 @@ public class FXMLController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbSquadra"
-    private ComboBox<?> cmbSquadra; // Value injected by FXMLLoader
+    private ComboBox<Team> cmbSquadra; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
@@ -48,12 +50,25 @@ public class FXMLController {
 
     @FXML
     void doClassifica(ActionEvent event) {
-
+    	txtResult.clear();
+    	if(entrato) {
+    		if(cmbSquadra.getValue() != null)
+    			txtResult.appendText(model.classifica(cmbSquadra.getValue()));
+    		else {
+				txtResult.appendText("Selezionare una squadra");
+			}
+    	}
+    	else {
+    		txtResult.appendText("Creare prima il grafo");
+    	}
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	model.creaGrafo();
+    	entrato = true;
+    	txtResult.appendText("Grafo creato\n# VERTICI: " + model.getNVertici() + "\n# ARCHI: " + model.getNArchi() + "\n");
+    	cmbSquadra.getItems().addAll(model.getVertici());
     }
 
     @FXML

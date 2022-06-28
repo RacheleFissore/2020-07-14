@@ -111,5 +111,59 @@ public class PremierLeagueDAO {
 			return null;
 		}
 	}
+
+	public List<Integer> calcolaClassifica(Team team) {
+		String sql = "SELECT ResultOfTeamHome AS punti "
+				+ "FROM matches WHERE TeamHomeID = ?";
+		
+		Connection conn = DBConnect.getConnection();
+		List<Integer> result = new ArrayList<>();
+		
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, team.getTeamID());
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+				result.add(res.getInt("punti"));			
+			}
+			conn.close();
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
+	public List<Match> partiteSquadra(Team team) {
+		String sql = "SELECT * "
+				+ "FROM matches "
+				+ "WHERE TeamHomeID = ? OR TeamAwayID = ?";
+		
+		List<Match> result = new ArrayList<Match>();
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, team.getTeamID());
+			st.setInt(2, team.getTeamID());
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+
+				
+				Match match = new Match(res.getInt("m.MatchID"), res.getInt("m.TeamHomeID"), res.getInt("m.TeamAwayID"), res.getInt("m.teamHomeFormation"), 
+							res.getInt("m.teamAwayFormation"),res.getInt("m.resultOfTeamHome"), res.getTimestamp("m.date").toLocalDateTime(), res.getString("t1.Name"),res.getString("t2.Name"));
+				
+				
+				result.add(match);
+
+			}
+			conn.close();
+			return result;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
